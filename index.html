@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="./style.css">
+  <title>InnoDB_Lock_Simulator</title>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.js" integrity="sha256-DrT5NfxfbHvMHux31Lkhxg42LY6of8TaYyK50jnxRnM=" crossorigin="anonymous"></script>
+</head>
+<body>
+  <header>
+    <h1>InnoDB Lock Simulator</h1>
+  </header>
+  <div id=description>
+    <h2>これは何？</h2>
+    <p>MySQLのデフォルトストレージエンジンInnoDBのロックの挙動をイメージするために作られたおもちゃ。<br>おもちゃなので軽い気持ちでポチポチと遊んでください(^o^)/<br>ただし、あくまで作者の頭の中のindex走査のイメージを可視化したものであって、正しくInnoDBの挙動を表しているものではないのでご注意ください。<br>間違いや改善案を見つけた方はIssueもしくはPullRequestsを作って頂けると嬉しいです。=> <a href="https://github.com/jiroshin/InnoDB_Lock_Simulator">GitHub</a></p>
+    <p>
+      <h2>ロックの配色</h2>
+      <table>
+        <tr>
+          <td style="background-color:#EF5350">Record Lock</td>
+          <td>レコード単位のロック。例えばselect for updateで獲得できる。</td>
+        </tr>
+        <tr>
+          <td style="background-color:#FFCC80">Gap Lock</td>
+          <td>単に抑制的(purely inhibitive)でGapへのデータ挿入を許さないだけのロック。select for updateとは競合しないので注意。</td>
+        </tr>
+        <tr>
+          <td style="background-color:#66BB6A">Next-key Lock</td>
+          <td>効果はレコードロックと同様。最後にスキャンされた行の次の行にかかるレコードロック。</td>
+        </tr>
+      </table>
+      <h2>テーブルの説明</h2>
+      <p>口座情報を管理するaccountsテーブル。カラムはidとbalanceだけのシンプルな設計。<br>idにはPRIMARY KEY制約がかかっている。balanceにはindexが張られていないものとする。<br>また、index走査はid昇順で動く設定とする。</p>
+  </div>
+  <div id="left-content">
+    <p>accountsテーブル</p>
+    <table>
+      <tr>
+        <th>id</th>
+        <th>balance</th>
+      </tr>
+      <tr class="gap" id="gap1">
+        <td>Gap: -∞ ~ -1</td>
+        <td>-</td>
+      </tr>
+      <tr id="id1">
+        <td>1</td>
+        <td>100</td>
+      </tr>
+      <tr id="id2">
+        <td>2</td>
+        <td>200</td>
+      </tr>
+      <tr id="id3">
+        <td>3</td>
+        <td>300</td>
+      </tr>
+      <tr id="id4">
+        <td>4</td>
+        <td>400</td>
+      </tr>
+      <tr id="id5">
+        <td>5</td>
+        <td>500</td>
+      </tr>
+      <tr class="gap" id="gap2">
+        <td>Gap: 6 ~ 9</td>
+        <td>-</td>
+      </tr>
+      <tr id="id10">
+        <td>10</td>
+        <td>1000</td>
+      </tr>
+      <tr class="gap" id="gap3">
+        <td>Gap: 11 ~ 19</td>
+        <td>-</td>
+      </tr>
+      <tr id="id20">
+        <td>20</td>
+        <td>2000</td>
+      </tr>
+      <tr class="gap" id="gap4">
+        <td>Gap: 21 ~ +∞</td>
+        <td>-</td>
+      </tr>
+    </table>
+    <div id="comment">コメント</div>
+  </div>
+  <div id="right-content">
+    <p>select * from accounts for update</p>
+    <p id="where-clause">{where clause}</p> <a href="#" class="btn" id="reset">Reset</a> <a href="#" class="btn" id="full-table-scan">where balance = 500</a> <a href="#" class="btn" id="where_eq_3">where id = 3</a> <a href="#" class="btn" id="where_eq_8">where id = 8</a> <a href="#" class="btn" id="where_eq_25">where id = 25</a> <a href="#" class="btn" id="where_lt_3">where id < 3</a> <a href="#" class="btn" id="where_lt_8">where id < 8</a> <a href="#" class="btn" id="where_gt_3">where id > 3</a> <a href="#" class="btn" id="where_gt_8">where id > 8</a> <a href="#" class="btn" id="where_lte_3">where id <= 3</a> <a href="#" class="btn" id="where_lte_5">where id <= 5</a> <a href="#" class="btn" id="where_lte_8">where id <= 8</a> <a href="#" class="btn" id="where_gte_3">where id >= 3</a> <a href="#" class="btn" id="where_gte_5">where id >= 5</a> <a href="#" class="btn" id="where_gte_8">where id >= 8</a> </div>
+  <div class="clear-fix"></div>
+  <footer> <small>Design by <a href="https://twitter.com/jiroshin_">@jiroshin</a></small> </footer>
+  <script type="text/javascript" src="./simulate.js"></script>
+</body>
+</html>
