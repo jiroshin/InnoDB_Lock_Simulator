@@ -40,7 +40,7 @@ $("#reset").click(function() {resetRecord()});
 $("#full-table-scan").click(async function() {
   resetRecord()
   displayWhereClause("where balance = 500")
-  displayComment("indexが張られていないbalanceに対してwhere条件を設定したため、クエリフルテーブルスキャンになってしまいます。この場合、テーブル全体にロックがかかりデータの挿入や削除、更新ができません。")
+  displayComment("indexが張られていないbalanceに対してwhere条件を設定したため、クエリがフルテーブルスキャンになってしまいます。この場合、テーブル全体にロックがかかりデータの挿入や削除、更新ができません。")
   await setRecordColor("#id1", colorRecordLock, timeSleepMSec)
   await setRecordColor("#id2", colorRecordLock, timeSleepMSec)
   await setRecordColor("#id3", colorRecordLock, timeSleepMSec)
